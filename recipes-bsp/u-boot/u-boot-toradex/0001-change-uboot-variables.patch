@@ -1,0 +1,22 @@
+diff --git a/include/configs/colibri-imx6ull.h b/include/configs/colibri-imx6ull.h
+index 6e89694016..1b6338afc9 100644
+--- a/include/configs/colibri-imx6ull.h
++++ b/include/configs/colibri-imx6ull.h
+@@ -93,7 +93,7 @@
+ 		"fatload ${interface} 0:1 ${loadaddr} " \
+ 		"${board}/flash_blk.img && source ${loadaddr}\0" \
+ 	"setup=setenv setupargs " \
+-		"console=tty1 console=${console}" \
++		"vt.global_cursor_default=0 console=${console}" \
+ 		",${baudrate}n8 ${memargs} consoleblank=0\0" \
+ 	"setupdate=run setsdupdate || run setusbupdate || run setethupdate\0" \
+ 	"setusbupdate=usb start && setenv interface usb && " \
+@@ -102,7 +102,7 @@
+ 	"splashpos=m,m\0" \
+ 	"splashimage=" __stringify(CONFIG_LOADADDR) "\0" \
+ 	"videomode=video=ctfb:x:640,y:480,depth:18,pclk:39722,le:48,ri:16,up:33,lo:10,hs:96,vs:2,sync:0,vmode:0\0" \
+-	"vidargs=video=mxsfb:640x480M-16@60"
++	"vidargs="
+ 
+ #define CONFIG_SYS_LOAD_ADDR		CONFIG_LOADADDR
+ 

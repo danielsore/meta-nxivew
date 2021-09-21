@@ -1,0 +1,464 @@
+/*
+ * Copyright 2019 PD3 Tecnologia
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+#include <dt-bindings/input/input.h>
+
+/ {
+	chosen {
+		bootargs = "console=ttymxc0,115200";
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_snvs_gpiokeys>;
+
+		power {
+			label = "Wake-Up";
+			gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_WAKEUP>;
+			debounce-interval = <10>;
+			gpio-key,wakeup;
+		};
+	};
+
+	extcon_usbc_det: usbc_det {
+		compatible = "linux,extcon-usb-gpio";
+		debounce = <25>;
+		id-gpio = <&gpio5 2 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_snvs_usbc_det>;
+	};
+
+	reg_3v3: regulator-3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	reg_5v0: regulator-5v0 {
+		compatible = "regulator-fixed";
+		regulator-name = "5V";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+	};
+
+	reg_usbh_vbus: regulator-usbh-vbus {
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_usbh_reg>;
+		regulator-name = "VCC_USB[1-4]";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpio = <&gpio1 2 GPIO_ACTIVE_LOW>;
+		vin-supply = <&reg_5v0>;
+	};
+
+  aout1: analog_out_pwm5 {
+    compatible = "novus,analog-output";
+    pwms = <&pwm5 0 1000000 0>;
+    gpios = <&gpio2 7 0>;
+    status = "okay";
+  };
+
+  aout2: analog_out_pwm6 {
+    compatible = "novus,analog-output";
+    pwms = <&pwm6 0 1000000 0>;
+    gpios = <&gpio5 10 0>;
+    status = "okay";
+  };
+};
+
+&backlight {
+	//brightness-levels = <0 4 8 16 32 64 128 255>;
+	brightness-levels = <0 4 8 16 32 48 64 80 96 112 128 144 160 176 192 208 224 240 255>;
+	default-brightness-level = <12>;
+	pwms = <&pwm4 0 5000000 1>;
+	status = "okay";
+};
+
+&adc1 {
+	status = "okay";
+};
+
+&pxp {
+	status = "okay";
+};
+
+/* Configure LCD to use 24-bit mode */
+&iomuxc {
+	pinctrl-names = "default";
+	//pinctrl-0 = <&pinctrl_hog_1 &pinctrl_hog_2 &pinctrl_hog_4 &pinctrl_hog_5 &pinctrl_hog_7>;
+	pinctrl-0 = <&pinctrl_gpios &pinctrl_digital_ios &pinctrl_vsel &pinctrl_psoc_res &pinctrl_hog_1_ihm>; /* Touch Screen interrupt pin - SODIMM 106 */
+
+	imx6ull-colibri-novus-ihm {
+		pinctrl_lcdif_24bitdat: lcdif24bitdatgrp {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA00__LCDIF_DATA00  0x00079
+				MX6UL_PAD_LCD_DATA01__LCDIF_DATA01  0x00079
+				MX6UL_PAD_LCD_DATA02__LCDIF_DATA02  0x00079
+				MX6UL_PAD_LCD_DATA03__LCDIF_DATA03  0x00079
+				MX6UL_PAD_LCD_DATA04__LCDIF_DATA04  0x00079
+				MX6UL_PAD_LCD_DATA05__LCDIF_DATA05  0x00079
+				MX6UL_PAD_LCD_DATA06__LCDIF_DATA06  0x00079
+				MX6UL_PAD_LCD_DATA07__LCDIF_DATA07  0x00079
+				MX6UL_PAD_LCD_DATA08__LCDIF_DATA08  0x00079
+				MX6UL_PAD_LCD_DATA09__LCDIF_DATA09  0x00079
+				MX6UL_PAD_LCD_DATA10__LCDIF_DATA10  0x00079
+				MX6UL_PAD_LCD_DATA11__LCDIF_DATA11  0x00079
+				MX6UL_PAD_LCD_DATA12__LCDIF_DATA12  0x00079
+				MX6UL_PAD_LCD_DATA13__LCDIF_DATA13  0x00079
+				MX6UL_PAD_LCD_DATA14__LCDIF_DATA14  0x00079
+				MX6UL_PAD_LCD_DATA15__LCDIF_DATA15  0x00079
+				MX6UL_PAD_LCD_DATA16__LCDIF_DATA16  0x00079
+				MX6UL_PAD_LCD_DATA17__LCDIF_DATA17  0x00079
+				MX6UL_PAD_LCD_DATA18__LCDIF_DATA18  0x00079
+				MX6UL_PAD_LCD_DATA19__LCDIF_DATA19  0x00079
+				MX6UL_PAD_LCD_DATA20__LCDIF_DATA20  0x00079
+				MX6UL_PAD_LCD_DATA21__LCDIF_DATA21  0x00079
+				MX6UL_PAD_LCD_DATA22__LCDIF_DATA22  0x00079
+				MX6UL_PAD_LCD_DATA23__LCDIF_DATA23  0x00079
+			>;
+		};
+		pinctrl_uart5_ihm: uart5group_ihm {
+			fsl,pins = <
+				MX6UL_PAD_CSI_DATA00__UART5_DTE_RX  	0x1b0b1
+				MX6UL_PAD_GPIO1_IO05__UART5_DTE_TX  	0x1b0b1
+				MX6UL_PAD_ENET1_RX_EN__UART5_DTE_CTS	0x1b0b1
+				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04		0xb0	/* SODIMM 19 */
+				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03		0x08	/* SODIMM  89, gpio3 */ /* EN 120R TERM. RES. GPIO LOW SPEED 260R */
+			>;
+		};
+		pinctrl_uart6_ihm: uart6group_ihm {
+			fsl,pins = <
+				MX6UL_PAD_CSI_MCLK__UART6_DTE_RX  	    0x1b0b1
+				MX6UL_PAD_CSI_PIXCLK__UART6_DTE_TX  	0x1b0b1
+				MX6UL_PAD_CSI_HSYNC__UART6_DTE_RTS		0x1b0b1
+				MX6UL_PAD_CSI_VSYNC__UART6_DTE_CTS	    0x1b0b1				
+			>;
+		};
+
+		pinctrl_usb_otg: usbotggroup {
+			fsl,pins = <
+				MX6UL_PAD_UART3_TX_DATA__ANATOP_OTG1_ID	0x14 /* SODIMM 135 */
+			>;
+		};
+
+		pinctrl_digital_ios: diogroup {
+			fsl,pins = <
+				MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08		0x14 /* SODIMM 138 - DOUT_0 */
+				MX6UL_PAD_UART3_RTS_B__GPIO1_IO27		0x14 /* SODIMM 186 - DOUT_1 */
+				MX6UL_PAD_ENET1_TX_DATA0__GPIO2_IO03	0x14 /* SODIMM 188 - DOUT_2 */
+				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09		0x14 /* SODIMM 2 - DOUT_3 */
+
+				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19		0x14 /* SODIMM 27 - DIN_0 */
+				MX6UL_PAD_NAND_DQS__GPIO4_IO16			0x14 /* SODIMM 28 - DIN_1 */
+				MX6UL_PAD_JTAG_TDO__GPIO1_IO12			0x14 /* SODIMM 23 - DIN_2 */
+				MX6UL_PAD_NAND_CE1_B__GPIO4_IO14		0x14 /* SODIMM 133 - DIN_3 */
+			>;
+		};
+
+		pinctrl_gpios: gpiogroup {
+			fsl,pins = <
+				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18		0x08 /* SODIMM 25, gpio18 */ /* GPIO LOW SPEED 260R - MICROMOD PWR */
+			>;
+		};
+
+		pinctrl_console: console-grp {
+			fsl,pins = <
+				MX6UL_PAD_UART1_TX_DATA__UART1_DTE_RX	0x1b0b1
+				MX6UL_PAD_UART1_RX_DATA__UART1_DTE_TX	0x1b0b1
+			>;
+		};
+
+		pinctrl_vsel: vselgrp {
+			fsl,pins = <
+				MX6UL_PAD_ENET1_RX_ER__GPIO2_IO07	0x14 /* SODIMM 104 - VSEL 1 */
+				MX6ULL_PAD_BOOT_MODE0__GPIO5_IO10	0x74 /* SODIMM 105 - VSEL 2 */
+			>;
+		};
+
+		pinctrl_aout_pwm1: pwm5iogrp {
+			fsl,pins = <
+				MX6UL_PAD_ENET1_TX_DATA1__PWM5_OUT	0x00079 /* SODIMM 73 - PWM 1 */
+			>;
+		};
+ 
+		pinctrl_aout_pwm2: pwm6iogrp {
+			fsl,pins = <
+				MX6UL_PAD_ENET1_TX_EN__PWM6_OUT	0x00079 /* SODIMM 30 - PWM 2 */
+			>;
+		};
+
+		pinctrl_psoc_res: analogiogrp {
+			fsl,pins = <
+				MX6UL_PAD_CSI_DATA01__GPIO4_IO22	0x14 /* SODIMM 103 - PSOC_RES# */
+			>;
+		};
+
+		pinctrl_i2c4: i2c4grp {
+			fsl,pins = <
+				MX6UL_PAD_UART2_TX_DATA__I2C4_SCL 0x4001f8b0
+				MX6UL_PAD_UART2_RX_DATA__I2C4_SDA 0x4001f8b0
+			>;
+		};
+
+		/* pinctrl_usdhc1: usdhc1grp { /* CONTROLE DE IMPEDÂNCIA */
+		/* Controle de impedância de acordo com velocidade do clock */
+		/* ~/oe-core/build/tmp-glibc/work-shared/colibri-imx6ull/kernel-source/arch/arm/boot/dts/imx6ull-colibri.dtsi */
+
+		pinctrl_hog_1_ihm: hoggrp-1_ihm { /* Unpluggeds */
+			fsl,pins = <								/* (GPIO = ((PORT - 1) * 32) + PIN) */
+				MX6UL_PAD_JTAG_TDI__GPIO1_IO13			0x08 /* SODIMM  31 , gpio13		*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_UART2_CTS_B__GPIO1_IO22	  	0x08 /* SODIMM  32 , gpio22		*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_UART2_RTS_B__GPIO1_IO23		0x08 /* SODIMM  34 , gpio23		*/ /* GPIO LOW SPEED 260R */
+				/*MX6UL_PAD_GPIO1_IO06__GPIO1_IO06		0x08 /* SODIMM 180 , gpio6		*/ /* GPIO LOW SPEED 260R */ /* RESERVED */
+				/*MX6UL_PAD_GPIO1_IO07__GPIO1_IO07		0x08 /* SODIMM 184 , gpio7		*/ /* GPIO LOW SPEED 260R */ /* RESERVED */
+				/*MX6UL_PAD_GPIO1_IO03__GPIO1_IO03		0x08 /* SODIMM  89 , gpio3		*/ /* UART5 GROUP RS485 TERMINATOR RESISTOR*/
+				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06		0x08 /* SODIMM  93 , gpio134	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_SNVS_TAMPER3__GPIO5_IO03		0x08 /* SODIMM  95 , gpio131	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_JTAG_TCK__GPIO1_IO14			0x08 /* SODIMM  99 , gpio14		*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08		0x08 /* SODIMM   4 , gpio8		*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_GPIO1_IO00__GPIO1_IO00		0x08 /* SODIMM   8 , gpio0		*/ /* GPIO LOW SPEED 260R */
+				/*MX6UL_PAD_GPIO1_IO04__GPIO1_IO04		0xb0 /* SODIMM  19 , gpio4		*/ /* UART5 GROUP */
+				MX6UL_PAD_CSI_DATA05__GPIO4_IO26		0x08 /* SODIMM  98 , gpio122	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01		0x08 /* SODIMM  45 , gpio129	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_UART3_CTS_B__GPIO1_IO26		0x08 /* SODIMM 100 , gpio26		*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_JTAG_TRST_B__GPIO1_IO15		0x08 /* SODIMM 102 , gpio15		*/ /* GPIO LOW SPEED 260R */
+				/*MX6UL_PAD_CSI_HSYNC__UART6_DTE_RTS 0x1b0b1 /* SODIMM  94 , gpio		*/ /* UART6 GROUP */
+				MX6UL_PAD_CSI_DATA02__GPIO4_IO23		0x08 /* SODIMM  79 , gpio119	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24		0x08 /* SODIMM  97 , gpio120	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_CSI_DATA06__GPIO4_IO27		0x08 /* SODIMM  85 , gpio123	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_CSI_DATA07__GPIO4_IO28		0x08 /* SODIMM  65 , gpio124	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_CSI_DATA04__GPIO4_IO25		0x08 /* SODIMM  69 , gpio121	*/ /* GPIO LOW SPEED 260R */
+				MX6UL_PAD_UART3_RX_DATA__GPIO1_IO25		0x08 /* SODIMM  77 , gpio25		*/ /* GPIO LOW SPEED 260R */
+			>;
+		};
+	};
+};
+
+&iomuxc_snvs {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio3>;
+};
+
+/* No SPI since LCD uses 24-bit color mode */
+&ecspi1 {
+	status = "disabled";
+};
+
+&i2c1 {
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	pinctrl-1 = <&pinctrl_i2c1_gpio>;
+	sda-gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
+	scl-gpios = <&gpio1 28 GPIO_ACTIVE_LOW>;
+	status = "okay";
+
+	/* Focaltech touchscreen controller */
+	focaltech: focaltech@38 {
+		compatible = "focaltech,fts";
+		reg = <0x38>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <10 IRQ_TYPE_EDGE_FALLING>; /* SODIMM 106 */
+		focaltech,reset-gpio = <&gpio5 4 GPIO_ACTIVE_HIGH>; /* SODIMM 107 */
+		focaltech,irq-gpio = <&gpio1 10 IRQ_TYPE_EDGE_FALLING>;
+        focaltech,panel-type = <FT5416>;
+        focaltech,max-touch-number = <2>;
+		focaltech,display-coords =  <0 0 1024 600>;
+		status = "okay";
+	};
+
+	/* PCF2127 real time clock on carrier board */
+	rtc: pcf2127@51 {
+		compatible = "nxp,pcf2127";
+		reg = <0x51>;
+	};
+
+	eeprom1: eeprom_24lc256t@50 {
+		compatible = "at,24c256";
+		pagesize = <64>;
+		reg = <0x50>;
+	};
+
+	eeprom2: eeprom_fm24lc04@56 {
+		compatible = "at,24c04";
+		pagesize = <256>;
+		reg = <0x56>;
+	};
+	/* psoc	 antes estavam no &i2c4 */
+
+	analogio1: psoc@8 {
+		compatible = "novus,analog-frontend";
+		reg = <0x8>;
+		gpios = <&gpio4 22 0>; /* Reset GPIO */
+	};
+
+	analogio2: psoc@a {
+		compatible = "novus,analog-frontend";
+		reg = <0xa>;
+	};
+
+	analogio3: psoc@c {
+		compatible = "novus,analog-frontend";
+		reg = <0xc>;
+	};
+
+	analogio4: psoc@e {
+		compatible = "novus,analog-frontend";
+		reg = <0xe>;
+	};
+};
+
+&i2c2 {
+	status = "disabled";
+};
+
+&i2c3 {
+	status = "disabled";
+};
+
+&i2c4 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c4>;
+	status = "okay";
+
+};
+
+
+
+&lcdif {
+	display = <&display0>;
+	status = "okay";
+
+	/* Override pinctrl from imx6ull-colibri.dtsi to support 24-bit LCD */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lcdif_24bitdat
+		     &pinctrl_lcdif_ctrl>;
+
+	display0: lcd-display {
+		bits-per-pixel = <32>;
+		bus-width = <24>;
+
+		display-timings {
+			native-mode = <&timing_eastrising>;
+
+			/* EastRising ER-TFT070-6 */
+			timing_eastrising: 1024x600 {
+				clock-frequency = <51200000>;
+				hactive = <1024>;
+				vactive = <600>;
+				hback-porch = <160>;
+				hfront-porch = <160>;
+				vback-porch = <23>;
+				vfront-porch = <12>;
+				hsync-len = <1>;
+				vsync-len = <1>;
+				de-active = <1>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				pixelclk-active = <0>;
+			};
+		};
+	};
+};
+
+/* PWM <A> - BACKLIGHT */
+&pwm4 {
+	status = "okay";
+};
+
+/* PWM <B> */
+&pwm5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_aout_pwm1>;
+	status = "okay";
+};
+
+/* PWM <C> */
+&pwm6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_aout_pwm2>;
+	status = "okay";
+};
+
+/* PWM <D> */
+&pwm7 {
+	status = "disabled";
+};
+
+&uart1 {
+	/* Override UART1 settings: don't use pintctrl_uart1_ctrl1 so that LCD can work in 24-bit mode */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_console>;
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart5_ihm>;
+	fsl,uart-has-rtscts;
+	fsl,dte-mode;
+	status = "okay";
+	linux,rs485-enabled-at-boot-time;
+    rs485-rts-active-low;
+    rs485-rx-during-tx;
+};
+
+&uart6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart6_ihm>;
+	fsl,uart-has-rtscts;
+	fsl,dte-mode;
+	status = "okay";
+};
+
+&usbotg1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usb_otg>;
+	vbus-supply = <&reg_usbh_vbus>;
+	status = "okay";
+};
+
+&usbotg2 {
+	vbus-supply = <&reg_usbh_vbus>;
+	status = "okay";
+};
+
+/* The define SD_1_8 allows to use the SD interface at a higher speed mode
+ * if the card supports it. For this the signaling voltage is switched from
+ * 3.3V to 1.8V under the usdhc1's drivers control.
+ */
+/* #define SD_1_8 */
+&usdhc1 {
+#ifdef SD_1_8
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd>;
+	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_snvs_usdhc1_cd>;
+	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_snvs_usdhc1_cd>;
+	vqmmc-supply = <&reg_sd1_vmmc>;
+#else
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd>;
+	no-1-8-v;
+#endif
+	cd-gpios = <&gpio5 0 GPIO_ACTIVE_HIGH>;
+	disable-wp;
+	enable-sdio-wakeup;
+	keep-power-in-suspend;
+	status = "okay";
+	vmmc-supply = <&reg_3v3>;
+};

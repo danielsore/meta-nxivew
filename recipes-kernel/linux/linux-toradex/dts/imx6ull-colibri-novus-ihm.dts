@@ -1,0 +1,18 @@
+/*
+ * Copyright 2019 PD3 Tecnologia
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+/dts-v1/;
+
+#include "imx6ull-colibri.dtsi"
+#include "imx6ull-colibri-novus-ihm.dtsi"
+
+/ {
+	model = "Toradex Colibri iMX6ULL 256MB on Novus IHM";
+	compatible = "toradex,colibri_imx6ull-novus-ihm", "fsl,imx6ull";
+};
